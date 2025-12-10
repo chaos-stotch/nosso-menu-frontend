@@ -12,6 +12,7 @@ import {
   Chip,
   ToggleButton,
   ToggleButtonGroup,
+  Alert,
 } from '@mui/material';
 import {
   Close,
@@ -22,6 +23,8 @@ import {
   LocalShipping,
   Discount,
   Store,
+  CheckCircle,
+  Cancel,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '../../utils/mockData';
@@ -39,6 +42,8 @@ const CartSidebar = ({
   const { deliveryType, handleDeliveryTypeChange } = useDelivery();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
+  const [couponStatus, setCouponStatus] = useState(null); // 'success', 'error', null
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const subtotal = items.reduce(
     (sum, item) => {
@@ -54,11 +59,62 @@ const CartSidebar = ({
   const deliveryFee = deliveryType === 'delivery' ? (restaurant?.deliveryFee || 0) : 0;
   const total = subtotal + deliveryFee - discount;
 
+  // Cupons disponíveis
+  const availableCoupons = {
+    'DESCONTO10': { discount: 0.1, type: 'percentage', name: '10% de desconto' },
+    'FRETEGRATIS': { discount: deliveryFee, type: 'fixed', name: 'Frete grátis' },
+    'BEMVINDO': { discount: 5, type: 'fixed', name: 'R$ 5,00 de desconto' },
+    'SUPER15': { discount: 0.15, type: 'percentage', name: '15% de desconto' },
+  };
+
   const handleApplyCoupon = () => {
-    if (couponCode.toUpperCase() === 'DESCONTO10') {
-      setDiscount(subtotal * 0.1);
+    const code = couponCode.toUpperCase().trim();
+    
+    if (!code) {
+      setCouponStatus('error');
+      setDiscount(0);
+      setAppliedCoupon(null);
+      return;
+    }
+
+    const coupon = availableCoupons[code];
+    
+    if (coupon) {
+      let discountValue = 0;
+      
+      if (coupon.type === 'percentage') {
+        discountValue = subtotal * coupon.discount;
+      } else {
+        discountValue = Math.min(coupon.discount, subtotal);
+      }
+      
+      setDiscount(discountValue);
+      setCouponStatus('success');
+      setAppliedCoupon({ code, ...coupon });
     } else {
       setDiscount(0);
+      setCouponStatus('error');
+      setAppliedCoupon(null);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode('');
+    setDiscount(0);
+    setCouponStatus(null);
+    setAppliedCoupon(null);
+  };
+
+  const handleCouponInputChange = (e) => {
+    setCouponCode(e.target.value);
+    if (couponStatus) {
+      setCouponStatus(null);
+    }
+  };
+
+  const handleCouponKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleApplyCoupon();
     }
   };
 
@@ -71,6 +127,7 @@ const CartSidebar = ({
         sx: {
           width: { xs: '100%', sm: 420 },
           maxWidth: '100%',
+          borderRadius: 0,
         },
       }}
     >
@@ -305,7 +362,7 @@ const CartSidebar = ({
                           </Stack>
                           <IconButton
                             component={motion.button}
-                            whileHover={{ scale: 1.1, rotate: 90 }}
+                            whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => onRemoveItem(item.id)}
                             color="error"
@@ -336,32 +393,104 @@ const CartSidebar = ({
             <Stack spacing={2}>
               {/* Coupon Code */}
               <Box>
-                <Stack direction="row" spacing={1}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Cupom de desconto"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    InputProps={{
-                      startAdornment: <Discount sx={{ mr: 1, color: 'text.secondary' }} />,
-                    }}
-                  />
-                  <Button
-                    variant="outlined"
-                    onClick={handleApplyCoupon}
-                    sx={{ whiteSpace: 'nowrap' }}
+                {!appliedCoupon ? (
+                  <>
+                    <Stack direction="row" spacing={1}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="Digite o cupom"
+                        value={couponCode}
+                        onChange={handleCouponInputChange}
+                        onKeyPress={handleCouponKeyPress}
+                        error={couponStatus === 'error'}
+                        InputProps={{
+                          startAdornment: (
+                            <Discount 
+                              sx={{ 
+                                mr: 1, 
+                                color: couponStatus === 'error' ? 'error.main' : 'text.secondary' 
+                              }} 
+                            />
+                          ),
+                        }}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            '&:hover fieldset': {
+                              borderColor: couponStatus === 'error' ? 'error.main' : 'primary.main',
+                            },
+                          },
+                        }}
+                      />
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        onClick={handleApplyCoupon}
+                        sx={{ 
+                          whiteSpace: 'nowrap',
+                          minWidth: 100,
+                          height: '40px', // Mesma altura do TextField small
+                        }}
+                      >
+                        Aplicar
+                      </Button>
+                    </Stack>
+                    {couponStatus === 'error' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                      >
+                        <Alert 
+                          severity="error" 
+                          icon={<Cancel />}
+                          sx={{ mt: 1.5 }}
+                          onClose={() => setCouponStatus(null)}
+                        >
+                          Cupom inválido. Tente novamente.
+                        </Alert>
+                      </motion.div>
+                    )}
+                  </>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
                   >
-                    Aplicar
-                  </Button>
-                </Stack>
-                {discount > 0 && (
-                  <Chip
-                    label={`Desconto: -${formatCurrency(discount)}`}
-                    color="success"
-                    size="small"
-                    sx={{ mt: 1 }}
-                  />
+                    <Alert 
+                      severity="success"
+                      icon={<CheckCircle />}
+                      action={
+                        <IconButton
+                          size="small"
+                          onClick={handleRemoveCoupon}
+                          sx={{ color: 'success.main' }}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+                      }
+                      sx={{
+                        '& .MuiAlert-message': {
+                          width: '100%',
+                        },
+                      }}
+                    >
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: '100%' }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {appliedCoupon.name} aplicado!
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            Cupom: {appliedCoupon.code}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'success.main' }}>
+                          -{formatCurrency(discount)}
+                        </Typography>
+                      </Stack>
+                    </Alert>
+                  </motion.div>
                 )}
               </Box>
 
