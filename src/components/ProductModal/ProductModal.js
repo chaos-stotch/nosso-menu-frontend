@@ -193,14 +193,12 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
                       mb: 1.5,
                       color: 'text.primary',
                       fontSize: '1rem',
+                      '& .MuiFormLabel-asterisk': {
+                        color: 'error.main',
+                      },
                     }}
                   >
                     {option.name}
-                    {option.required && (
-                      <Typography component="span" sx={{ color: 'error.main', ml: 0.5 }}>
-                        *
-                      </Typography>
-                    )}
                   </FormLabel>
                   <RadioGroup
                     value={selectedOptions[option.id] || ''}

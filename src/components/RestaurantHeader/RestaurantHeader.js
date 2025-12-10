@@ -204,10 +204,10 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
       {/* Info Bar - Minimalista */}
       <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 3 }, position: 'relative', zIndex: 1, px: { xs: 2, sm: 3 } }}>
         <Box
-          component={motion.div}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
+              component={motion.div}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
           sx={{
             backgroundColor: 'background.paper',
             borderRadius: 2,
@@ -246,7 +246,7 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
                   borderColor: 'divider',
                   '&.Mui-selected': {
                     backgroundColor: 'secondary.main',
-                    color: 'white',
+                color: 'white',
                     '&:hover': {
                       backgroundColor: 'secondary.dark',
                     },
@@ -269,8 +269,8 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary' }}>
                   <LocalShipping sx={{ fontSize: { xs: 18, sm: 20 }, color: 'text.secondary' }} />
                   <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, fontWeight: 500 }}>
-                    {formatCurrency(restaurant.deliveryFee)}
-                  </Typography>
+                {formatCurrency(restaurant.deliveryFee)}
+              </Typography>
                 </Stack>
 
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary' }}>
@@ -287,7 +287,7 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
                 <AccessTime sx={{ fontSize: { xs: 18, sm: 20 }, color: 'text.secondary' }} />
                 <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, fontWeight: 500 }}>
                   15-20 min
-                </Typography>
+              </Typography>
               </Stack>
             )}
 
@@ -295,7 +295,7 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
               direction="row" 
               spacing={1} 
               alignItems="center" 
-              sx={{ 
+              sx={{
                 color: 'text.secondary',
                 display: { xs: 'none', lg: 'flex' },
               }}
@@ -320,7 +320,7 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
               direction="row" 
               spacing={1} 
               alignItems="center" 
-              sx={{ 
+              sx={{
                 color: 'text.secondary',
                 justifyContent: { xs: 'center', sm: 'flex-start' },
               }}
@@ -353,7 +353,7 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
               direction="row" 
               spacing={1} 
               alignItems="center" 
-              sx={{ 
+              sx={{
                 color: 'text.secondary',
                 justifyContent: 'center',
               }}

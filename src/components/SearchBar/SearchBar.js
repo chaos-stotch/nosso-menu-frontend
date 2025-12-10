@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Container, TextField, InputAdornment, Avatar, Stack } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Box, Container, TextField, InputAdornment, Avatar, Stack, IconButton } from '@mui/material';
+import { Search, Close } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
 const SearchBar = ({ searchQuery, onSearchChange, showLogo = false, restaurant }) => {
@@ -9,6 +9,10 @@ const SearchBar = ({ searchQuery, onSearchChange, showLogo = false, restaurant }
       top: 0,
       behavior: 'smooth',
     });
+  };
+
+  const handleClear = () => {
+    onSearchChange('');
   };
 
   return (
@@ -79,6 +83,23 @@ const SearchBar = ({ searchQuery, onSearchChange, showLogo = false, restaurant }
                   startAdornment: (
                     <InputAdornment position="start">
                       <Search sx={{ color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchQuery && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClear}
+                        size="small"
+                        sx={{
+                          color: 'text.secondary',
+                          '&:hover': {
+                            color: 'text.primary',
+                            backgroundColor: 'action.hover',
+                          },
+                        }}
+                      >
+                        <Close fontSize="small" />
+                      </IconButton>
                     </InputAdornment>
                   ),
                 }}

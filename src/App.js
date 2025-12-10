@@ -9,7 +9,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <DeliveryProvider>
-        <RestaurantPage />
+      <RestaurantPage />
       </DeliveryProvider>
     </ThemeProvider>
   );

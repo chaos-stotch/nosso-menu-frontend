@@ -124,9 +124,9 @@ const Footer = ({ restaurant }) => {
                 }}
               >
                 Horário de Funcionamento
-              </Typography>
+                    </Typography>
               <Stack spacing={1.5}>
-                {Object.entries(restaurant.openingHours).map(([day, hours]) => (
+                    {Object.entries(restaurant.openingHours).map(([day, hours]) => (
                   <Stack 
                     key={day}
                     direction="row" 
@@ -136,15 +136,15 @@ const Footer = ({ restaurant }) => {
                       py: 0.5,
                     }}
                   >
-                    <Typography
+                      <Typography
                       variant="body2"
-                      sx={{
+                        sx={{
                         color: 'text.secondary',
                         fontWeight: 500,
                         fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-                        textTransform: 'capitalize',
-                      }}
-                    >
+                          textTransform: 'capitalize',
+                        }}
+                      >
                       {dayNames[day]}
                     </Typography>
                     <Typography
@@ -156,9 +156,9 @@ const Footer = ({ restaurant }) => {
                       }}
                     >
                       {hours}
-                    </Typography>
+                      </Typography>
                   </Stack>
-                ))}
+                    ))}
               </Stack>
             </motion.div>
           </Grid>

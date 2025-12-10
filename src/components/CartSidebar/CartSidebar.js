@@ -395,16 +395,16 @@ const CartSidebar = ({
               <Box>
                 {!appliedCoupon ? (
                   <>
-                    <Stack direction="row" spacing={1}>
-                      <TextField
-                        fullWidth
-                        size="small"
+                <Stack direction="row" spacing={1}>
+                  <TextField
+                    fullWidth
+                    size="small"
                         placeholder="Digite o cupom"
-                        value={couponCode}
+                    value={couponCode}
                         onChange={handleCouponInputChange}
                         onKeyPress={handleCouponKeyPress}
                         error={couponStatus === 'error'}
-                        InputProps={{
+                    InputProps={{
                           startAdornment: (
                             <Discount 
                               sx={{ 
@@ -420,22 +420,22 @@ const CartSidebar = ({
                               borderColor: couponStatus === 'error' ? 'error.main' : 'primary.main',
                             },
                           },
-                        }}
-                      />
-                      <Button
+                    }}
+                  />
+                  <Button
                         variant="contained"
                         color="secondary"
                         size="small"
-                        onClick={handleApplyCoupon}
+                    onClick={handleApplyCoupon}
                         sx={{ 
                           whiteSpace: 'nowrap',
                           minWidth: 100,
                           height: '40px', // Mesma altura do TextField small
                         }}
-                      >
-                        Aplicar
-                      </Button>
-                    </Stack>
+                  >
+                    Aplicar
+                  </Button>
+                </Stack>
                     {couponStatus === 'error' && (
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
@@ -463,7 +463,7 @@ const CartSidebar = ({
                       icon={<CheckCircle />}
                       action={
                         <IconButton
-                          size="small"
+                    size="small"
                           onClick={handleRemoveCoupon}
                           sx={{ color: 'success.main' }}
                         >
@@ -507,17 +507,17 @@ const CartSidebar = ({
                   </Typography>
                 </Stack>
                 {deliveryType === 'delivery' && (
-                  <Stack direction="row" justifyContent="space-between">
-                    <Stack direction="row" spacing={0.5} alignItems="center">
-                      <LocalShipping sx={{ fontSize: 16, color: 'text.secondary' }} />
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Taxa de entrega
-                      </Typography>
-                    </Stack>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {formatCurrency(deliveryFee)}
+                <Stack direction="row" justifyContent="space-between">
+                  <Stack direction="row" spacing={0.5} alignItems="center">
+                    <LocalShipping sx={{ fontSize: 16, color: 'text.secondary' }} />
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      Taxa de entrega
                     </Typography>
                   </Stack>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {formatCurrency(deliveryFee)}
+                  </Typography>
+                </Stack>
                 )}
                 {deliveryType === 'pickup' && (
                   <Stack direction="row" justifyContent="space-between">
