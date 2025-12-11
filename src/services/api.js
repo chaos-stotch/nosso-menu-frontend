@@ -8,7 +8,10 @@ class ApiService {
    * Faz uma requisição HTTP
    */
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    // Garantir que não há barras duplas na URL
+    const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${baseUrl}${cleanEndpoint}`;
     const config = {
       headers: {
         'Content-Type': 'application/json',
