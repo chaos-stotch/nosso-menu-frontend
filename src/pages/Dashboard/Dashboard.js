@@ -20,6 +20,14 @@ const Dashboard = () => {
     setSidebarOpen(!isMobile);
   }, [isMobile]);
 
+  const handleDrawerToggle = () => {
+    if (isMobile) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      setSidebarOpen(!sidebarOpen);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -50,7 +58,7 @@ const Dashboard = () => {
           }),
         }}
       >
-        <DashboardHeader />
+        <DashboardHeader onMenuClick={handleDrawerToggle} />
         
         <Box
           component="main"

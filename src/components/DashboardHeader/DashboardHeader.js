@@ -16,13 +16,17 @@ import {
   AccountCircle as AccountCircleIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useMediaQuery, useTheme } from '@mui/material';
 
-const DashboardHeader = () => {
+const DashboardHeader = ({ onMenuClick }) => {
   const { restaurant, user, logout } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenuOpen = (event) => {
@@ -51,6 +55,17 @@ const DashboardHeader = () => {
       }}
     >
       <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>
+        {isMobile && onMenuClick && (
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={onMenuClick}
+            sx={{ mr: 1 }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
           <Typography
             variant="h6"
