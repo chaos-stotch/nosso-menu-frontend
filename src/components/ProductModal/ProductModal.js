@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,13 +17,65 @@ import {
   Chip,
   Paper,
 } from '@mui/material';
-import { Close, Add, Remove, Star, TrendingUp } from '@mui/icons-material';
+import { Close, Add, Remove, Star, TrendingUp, KeyboardArrowDown } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { formatCurrency } from '../../utils/mockData';
 
 const ProductModal = ({ product, open, onClose, onAddToCart }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const scrollableContentRef = useRef(null);
+
+  // Verificar se há conteúdo para rolar
+  useEffect(() => {
+    const checkScroll = () => {
+      if (scrollableContentRef.current) {
+        const { scrollHeight, clientHeight, scrollTop } = scrollableContentRef.current;
+        // Mostrar indicador apenas se houver scroll disponível, estiver no topo e não tiver rolado ainda
+        const hasScroll = scrollHeight > clientHeight;
+        const isAtTop = scrollTop < 10; // Considera "no topo" se scrollTop for menor que 10px
+        setShowScrollIndicator(hasScroll && isAtTop);
+      }
+    };
+
+    if (open) {
+      // Aguardar um pouco para o conteúdo ser renderizado
+      const timeouts = [];
+      
+      const setupScrollListener = () => {
+        if (scrollableContentRef.current) {
+          checkScroll();
+          const scrollElement = scrollableContentRef.current;
+          scrollElement.addEventListener('scroll', checkScroll);
+          
+          // Verificar periodicamente para garantir que detecta mudanças
+          const interval = setInterval(checkScroll, 200);
+          
+          // Usar ResizeObserver para detectar mudanças no tamanho do conteúdo
+          const resizeObserver = new ResizeObserver(checkScroll);
+          resizeObserver.observe(scrollElement);
+          
+          return () => {
+            scrollElement.removeEventListener('scroll', checkScroll);
+            clearInterval(interval);
+            resizeObserver.disconnect();
+          };
+        }
+      };
+
+      // Múltiplos delays para garantir que detecta
+      timeouts.push(setTimeout(setupScrollListener, 50));
+      timeouts.push(setTimeout(setupScrollListener, 200));
+      timeouts.push(setTimeout(setupScrollListener, 500));
+      
+      return () => {
+        timeouts.forEach(clearTimeout);
+      };
+    } else {
+      setShowScrollIndicator(false);
+    }
+  }, [open, product, selectedOptions]);
 
   if (!product) return null;
 
@@ -73,9 +125,9 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
   };
 
   const isAddButtonDisabled = () => {
-    return product.options.some(option => 
+    return product?.options?.some(option => 
       option.required && !selectedOptions[option.id]
-    );
+    ) || false;
   };
 
   return (
@@ -86,57 +138,147 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 4,
+          borderRadius: 2,
           maxHeight: '90vh',
         },
       }}
     >
-      <DialogTitle
+      {/* Close Button - Fixed Position */}
+      <IconButton
+        onClick={onClose}
         sx={{
-          p: 0,
-          position: 'relative',
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          zIndex: 10,
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          '&:hover': {
+            backgroundColor: 'white',
+          },
         }}
       >
+        <Close />
+      </IconButton>
+
+      <DialogContent 
+        sx={{ 
+          p: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Scrollable Content */}
         <Box
+          ref={scrollableContentRef}
           sx={{
+            flex: 1,
+            overflowY: 'auto',
             position: 'relative',
-            width: '100%',
-            paddingTop: '40%',
-            overflow: 'hidden',
-            backgroundColor: 'grey.100',
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              borderRadius: '3px',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.3)',
+              },
+            },
           }}
         >
+          {/* Product Image */}
           <Box
-            component="img"
-            src={product.image}
-            alt={product.name}
             sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
+              position: 'relative',
               width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
-          />
-          <IconButton
-            onClick={onClose}
-            sx={{
-              position: 'absolute',
-              top: 16,
-              right: 16,
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              '&:hover': {
-                backgroundColor: 'white',
-              },
+              paddingTop: { xs: '40%', sm: '35%', md: '30%' },
+              overflow: 'hidden',
+              backgroundColor: 'grey.100',
             }}
           >
-            <Close />
-          </IconButton>
-        </Box>
-      </DialogTitle>
+            <Box
+              component="img"
+              src={product.image}
+              alt={product.name}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
+          </Box>
 
-      <DialogContent sx={{ p: 3 }}>
+          {/* Content */}
+          <Box sx={{ p: 3 }}>
+          {/* Scroll Indicator */}
+          {showScrollIndicator && (
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 80,
+                background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.95) 100%)',
+                pointerEvents: 'none',
+                zIndex: 2,
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                pb: 1,
+              }}
+            >
+              <Box
+                component={motion.div}
+                animate={{
+                  y: [0, 8, 0],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.5,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                  }}
+                >
+                  Role para ver mais
+                </Typography>
+                <KeyboardArrowDown
+                  sx={{
+                    fontSize: 24,
+                    color: 'secondary.main',
+                  }}
+                />
+              </Box>
+            </Box>
+          )}
         <Stack spacing={3}>
           {/* Product Name and Badges */}
           <Box>
@@ -180,11 +322,11 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
             </Typography>
           </Box>
 
-          <Divider />
-
           {/* Options */}
           {product.options && product.options.length > 0 && (
-            <Stack spacing={3}>
+            <>
+              <Divider />
+              <Stack spacing={3}>
               {product.options.map((option) => (
                 <FormControl key={option.id} required={option.required}>
                   <FormLabel
@@ -193,9 +335,9 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
                       mb: 1.5,
                       color: 'text.primary',
                       fontSize: '1rem',
-                      '& .MuiFormLabel-asterisk': {
-                        color: 'error.main',
-                      },
+                        '& .MuiFormLabel-asterisk': {
+                          color: 'error.main',
+                        },
                     }}
                   >
                     {option.name}
@@ -247,10 +389,87 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
                   </RadioGroup>
                 </FormControl>
               ))}
-              <Divider />
-            </Stack>
+              </Stack>
+            </>
           )}
+        </Stack>
+          </Box>
 
+          {/* Scroll Indicator */}
+          {showScrollIndicator && (
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 80,
+                background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.95) 100%)',
+                pointerEvents: 'none',
+                zIndex: 2,
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                pb: 1,
+              }}
+            >
+              <Box
+                component={motion.div}
+                animate={{
+                  y: [0, 8, 0],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.5,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                  }}
+                >
+                  Role para ver mais
+                </Typography>
+                <KeyboardArrowDown
+                  sx={{
+                    fontSize: 24,
+                    color: 'secondary.main',
+                  }}
+                />
+              </Box>
+            </Box>
+          )}
+        </Box>
+
+        {/* Fixed Footer */}
+        <Box
+          sx={{
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            backgroundColor: 'background.paper',
+            p: 3,
+            position: 'sticky',
+            bottom: 0,
+            zIndex: 1,
+          }}
+        >
+          <Stack spacing={2}>
           {/* Quantity and Price */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Box>
@@ -319,6 +538,7 @@ const ProductModal = ({ product, open, onClose, onAddToCart }) => {
             Adicionar ao Carrinho
           </Button>
         </Stack>
+        </Box>
       </DialogContent>
     </Dialog>
   );
