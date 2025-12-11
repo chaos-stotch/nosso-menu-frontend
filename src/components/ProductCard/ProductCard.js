@@ -44,6 +44,9 @@ const ProductCard = ({ product, onAddToCart, onOpenModal }) => {
         cursor: 'pointer',
         position: 'relative',
         overflow: 'hidden',
+        '&:hover .product-image': {
+          transform: 'scale(1.1)',
+        },
       }}
       onClick={() => onOpenModal(product)}
     >
@@ -109,6 +112,7 @@ const ProductCard = ({ product, onAddToCart, onOpenModal }) => {
           component="img"
           image={product.image}
           alt={product.name}
+          className="product-image"
           sx={{
             position: 'absolute',
             top: 0,
@@ -117,9 +121,6 @@ const ProductCard = ({ product, onAddToCart, onOpenModal }) => {
             height: '100%',
             objectFit: 'cover',
             transition: 'transform 0.5s ease',
-            '&:hover': {
-              transform: 'scale(1.1)',
-            },
           }}
         />
       </Box>

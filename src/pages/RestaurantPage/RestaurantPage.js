@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -7,6 +8,7 @@ import {
   Badge,
   Typography,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import { ShoppingCart } from '@mui/icons-material';
 import { motion } from 'framer-motion';
@@ -16,11 +18,15 @@ import ProductCard from '../../components/ProductCard/ProductCard';
 import ProductModal from '../../components/ProductModal/ProductModal';
 import CartSidebar from '../../components/CartSidebar/CartSidebar';
 import Footer from '../../components/Footer/Footer';
+import RestaurantThemeProvider from '../../components/RestaurantThemeProvider/RestaurantThemeProvider';
 import useRestaurant from '../../hooks/useRestaurant';
-import useCart from '../../hooks/useCart';
+import { useCartContext } from '../../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const RestaurantPage = () => {
-  const { restaurant, categories, products, searchQuery, handleSearchChange } = useRestaurant();
+  const navigate = useNavigate();
+  const { slug } = useParams();
+  const { restaurant, categories, products, searchQuery, handleSearchChange, loading } = useRestaurant(slug);
   const headerRef = useRef(null);
   const [showLogoInSearchBar, setShowLogoInSearchBar] = useState(false);
   const {
@@ -33,7 +39,7 @@ const RestaurantPage = () => {
     getItemCount,
     getTotal,
     getSubtotal,
-  } = useCart();
+  } = useCartContext();
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +63,10 @@ const RestaurantPage = () => {
   };
 
   const handleCheckout = () => {
-    alert('Redirecionando para o checkout...');
+    setIsCartOpen(false);
+    if (slug) {
+      navigate(`/${slug}/checkout`);
+    }
   };
 
   // Detectar quando o header sair de vista
@@ -110,8 +119,31 @@ const RestaurantPage = () => {
     return orderedCategories;
   }, [products, categories]);
 
+  // Mostrar loading enquanto carrega
+  if (loading && !restaurant) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'background.default',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Se não houver restaurante, não renderizar nada
+  if (!restaurant) {
+    return null;
+  }
+
   return (
-    <Box
+    <RestaurantThemeProvider restaurant={restaurant}>
+      <Box
       sx={{
         minHeight: '100vh',
         backgroundColor: 'background.default',
@@ -221,13 +253,11 @@ const RestaurantPage = () => {
       <CartSidebar
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        items={items}
-        onUpdateQuantity={updateQuantity}
-        onRemoveItem={removeItem}
         restaurant={restaurant}
         onCheckout={handleCheckout}
       />
     </Box>
+    </RestaurantThemeProvider>
   );
 };
 

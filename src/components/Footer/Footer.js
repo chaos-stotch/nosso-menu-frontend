@@ -31,6 +31,11 @@ const Footer = ({ restaurant }) => {
     sunday: 'Domingo',
   };
 
+  // Verificar se restaurant existe
+  if (!restaurant) {
+    return null;
+  }
+
   return (
     <Box
       component="footer"

@@ -20,13 +20,24 @@ import {
   LocationOn,
   Celebration,
   Store,
+  TrackChanges as TrackChangesIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { useNavigate, useParams } from 'react-router-dom';
 import { formatCurrency } from '../../utils/mockData';
 import { useDelivery } from '../../contexts/DeliveryContext';
+import { useOrder } from '../../contexts/OrderContext';
 
 const RestaurantHeader = ({ restaurant, onStartOrder }) => {
   const { deliveryType, handleDeliveryTypeChange } = useDelivery();
+  const { currentOrder } = useOrder();
+  const navigate = useNavigate();
+  const { slug } = useParams();
+
+  // Verificar se restaurant existe
+  if (!restaurant) {
+    return null;
+  }
 
   return (
     <Box
@@ -75,6 +86,36 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
             px: { xs: 2, sm: 3 },
           }}
         >
+          {/* Order Tracking Button */}
+            {currentOrder && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: { xs: 16, sm: 24 },
+                  right: { xs: 16, sm: 24 },
+                  zIndex: 10,
+                }}
+              >
+                <Button
+                  component={motion.button}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => slug ? navigate(`/${slug}/order-tracking`) : navigate('/order-tracking')}
+                  variant="contained"
+                  startIcon={<TrackChangesIcon />}
+                  sx={{
+                    backgroundColor: 'rgba(255, 107, 25, 0.9)',
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 107, 25, 1)',
+                    },
+                    boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  Acompanhar Pedido
+                </Button>
+              </Box>
+            )}
           <Grid container spacing={{ xs: 2, sm: 3 }} alignItems={{ xs: 'center', sm: 'flex-end' }}>
             {/* Logo */}
             <Grid item xs={12} sm="auto" sx={{ display: { xs: 'flex', sm: 'block' }, justifyContent: { xs: 'center', sm: 'flex-start' }, order: { xs: 1, sm: 1 } }}>

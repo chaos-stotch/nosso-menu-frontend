@@ -1,6 +1,6 @@
 export const mockRestaurant = {
-  id: 'littlecaesars',
-  name: 'Little Caesars',
+  id: 'mock-restaurant',
+  name: 'Restaurante Exemplo',
   category: 'Pizzaria • Italiana',
   rating: 4.8,
   totalReviews: 1247,
@@ -35,8 +35,8 @@ export const mockRestaurant = {
     }
   ],
   socialMedia: {
-    instagram: '@littlecaesars',
-    facebook: 'Little Caesars'
+    instagram: '@restaurante',
+    facebook: 'Restaurante Exemplo'
   }
 };
 

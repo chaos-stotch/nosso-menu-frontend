@@ -29,17 +29,16 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '../../utils/mockData';
 import { useDelivery } from '../../contexts/DeliveryContext';
+import { useCartContext } from '../../contexts/CartContext';
 
 const CartSidebar = ({
   isOpen,
   onClose,
-  items,
-  onUpdateQuantity,
-  onRemoveItem,
   restaurant,
   onCheckout,
 }) => {
   const { deliveryType, handleDeliveryTypeChange } = useDelivery();
+  const { items, updateQuantity, removeItem } = useCartContext();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponStatus, setCouponStatus] = useState(null); // 'success', 'error', null
@@ -325,7 +324,7 @@ const CartSidebar = ({
                               whileTap={{ scale: 0.9 }}
                               size="small"
                               onClick={() =>
-                                onUpdateQuantity(item.id, item.quantity - 1)
+                                updateQuantity(item.id, item.quantity - 1)
                               }
                               sx={{
                                 border: '1px solid',
@@ -350,7 +349,7 @@ const CartSidebar = ({
                               whileTap={{ scale: 0.9 }}
                               size="small"
                               onClick={() =>
-                                onUpdateQuantity(item.id, item.quantity + 1)
+                                updateQuantity(item.id, item.quantity + 1)
                               }
                               sx={{
                                 border: '1px solid',
@@ -364,7 +363,7 @@ const CartSidebar = ({
                             component={motion.button}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => onRemoveItem(item.id)}
+                            onClick={() => removeItem(item.id)}
                             color="error"
                             size="small"
                           >
