@@ -56,15 +56,15 @@ const DashboardHeader = ({ onMenuClick }) => {
     >
       <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>
         {isMobile && onMenuClick && (
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={onMenuClick}
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={onMenuClick}
             sx={{ mr: 1 }}
-          >
-            <MenuIcon />
-          </IconButton>
+        >
+          <MenuIcon />
+        </IconButton>
         )}
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
           <Typography

@@ -76,17 +76,17 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
           justifyContent: isDrawerOpen ? 'space-between' : 'center',
-          p: 2,
-          minHeight: 64,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
+            p: 2,
+            minHeight: 64,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           {isDrawerOpen && (
             <Typography
@@ -119,79 +119,79 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
             </Box>
           </Tooltip>
         </Box>
-      </Box>
+        </Box>
 
       <List sx={{ px: isDrawerOpen ? 2 : 1, py: 2, flex: 1, overflow: 'auto' }}>
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          
-          return (
-            <ListItem key={item.id} disablePadding sx={{ mb: 1 }}>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            
+            return (
+              <ListItem key={item.id} disablePadding sx={{ mb: 1 }}>
               <Tooltip title={!isDrawerOpen && !isMobile ? item.label : ''} placement="right">
-                <ListItemButton
-                  component={motion.div}
-                  whileHover={{ x: 4 }}
-                  onClick={() => handleNavigation(item.path)}
-                  sx={{
-                    borderRadius: 2,
-                    backgroundColor: isActive ? 'primary.main' : 'transparent',
-                    color: isActive ? 'primary.contrastText' : 'text.primary',
-                    '&:hover': {
-                      backgroundColor: isActive ? 'primary.dark' : 'action.hover',
-                    },
-                    py: 1.5,
+                  <ListItemButton
+                    component={motion.div}
+                    whileHover={{ x: 4 }}
+                    onClick={() => handleNavigation(item.path)}
+                    sx={{
+                      borderRadius: 2,
+                      backgroundColor: isActive ? 'primary.main' : 'transparent',
+                      color: isActive ? 'primary.contrastText' : 'text.primary',
+                      '&:hover': {
+                        backgroundColor: isActive ? 'primary.dark' : 'action.hover',
+                      },
+                      py: 1.5,
                     px: isDrawerOpen ? 2 : 1.5,
                     justifyContent: isDrawerOpen ? 'flex-start' : 'center',
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: isDrawerOpen ? 40 : 'auto',
-                      color: isActive ? 'primary.contrastText' : 'text.primary',
                     }}
                   >
-                    <Icon />
-                  </ListItemIcon>
-                  {isDrawerOpen && (
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        fontWeight: isActive ? 600 : 500,
-                        fontSize: '0.95rem',
+                    <ListItemIcon
+                      sx={{
+                      minWidth: isDrawerOpen ? 40 : 'auto',
+                        color: isActive ? 'primary.contrastText' : 'text.primary',
                       }}
-                    />
-                  )}
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
-          );
-        })}
-      </List>
+                    >
+                      <Icon />
+                    </ListItemIcon>
+                  {isDrawerOpen && (
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontWeight: isActive ? 600 : 500,
+                          fontSize: '0.95rem',
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            );
+          })}
+        </List>
 
-      <Divider sx={{ mx: 2 }} />
+        <Divider sx={{ mx: 2 }} />
 
       <Box sx={{ p: 2 }}>
         <Tooltip title={!isDrawerOpen && !isMobile ? 'Ver Restaurante' : ''} placement="right">
-          <Box
-            component={motion.div}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleViewRestaurant}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: 'action.hover',
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'action.selected',
-              },
-            }}
-          >
-            <Avatar
+            <Box
+              component={motion.div}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleViewRestaurant}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: 'action.hover',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'action.selected',
+                },
+              }}
+            >
+              <Avatar
               src={restaurant?.logo}
               alt={restaurant?.name || 'Restaurante'}
               sx={{ width: isDrawerOpen ? 40 : 32, height: isDrawerOpen ? 40 : 32 }}
@@ -199,36 +199,36 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
               {restaurant?.name?.[0] || 'R'}
             </Avatar>
             {isDrawerOpen && (
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 600,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Ver Restaurante
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'text.secondary',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    display: 'block',
-                  }}
-                >
-                  <VisibilityIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
-                  Visualizar
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Tooltip>
-      </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Ver Restaurante
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'block',
+                    }}
+                  >
+                    <VisibilityIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
+                    Visualizar
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Tooltip>
+        </Box>
     </Box>
   );
 
