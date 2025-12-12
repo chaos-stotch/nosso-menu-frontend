@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -89,6 +90,7 @@ const STATUS_OPTIONS = [
 
 const OrdersManagement = () => {
   const { restaurant } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -105,6 +107,23 @@ const OrdersManagement = () => {
       return () => clearInterval(interval);
     }
   }, [restaurant]);
+
+  // Abrir pedido quando orderId estiver na URL
+  useEffect(() => {
+    const orderId = searchParams.get('orderId');
+    if (orderId && orders.length > 0 && !openDialog && !selectedOrder) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        setSelectedOrder(order);
+        setOpenDialog(true);
+        // Remover orderId da URL após abrir
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('orderId');
+        setSearchParams(newSearchParams, { replace: true });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders.length]);
 
   const loadOrders = async () => {
     if (!restaurant) return;
@@ -152,6 +171,12 @@ const OrdersManagement = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedOrder(null);
+    // Remover orderId da URL ao fechar
+    if (searchParams.get('orderId')) {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.delete('orderId');
+      setSearchParams(newSearchParams, { replace: true });
+    }
   };
 
   const formatDate = (dateString) => {

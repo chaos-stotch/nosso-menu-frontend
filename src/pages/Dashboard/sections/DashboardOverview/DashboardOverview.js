@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   Avatar,
-  LinearProgress,
   Button,
 } from '@mui/material';
 import {
@@ -281,87 +280,6 @@ const DashboardOverview = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Paper
-            component={motion.div}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            sx={{ p: 3, height: '100%' }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>
-              Status dos Produtos
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Produtos Recomendados
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {recommendedProducts} / {totalProducts}
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={totalProducts > 0 ? (recommendedProducts / totalProducts) * 100 : 0}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 'action.hover',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#ffd700',
-                    },
-                  }}
-                />
-              </Box>
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Mais Vendidos
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {bestSellers} / {totalProducts}
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={totalProducts > 0 ? (bestSellers / totalProducts) * 100 : 0}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 'action.hover',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#ff6b19',
-                    },
-                  }}
-                />
-              </Box>
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Produtos com Opções
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {stats.products.filter(p => p.options && p.options.length > 0).length} / {totalProducts}
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={totalProducts > 0 ? (stats.products.filter(p => p.options && p.options.length > 0).length / totalProducts) * 100 : 0}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: 'action.hover',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#4caf50',
-                    },
-                  }}
-                />
-              </Box>
-            </Box>
-          </Paper>
-        </Grid>
       </Grid>
     </Box>
   );

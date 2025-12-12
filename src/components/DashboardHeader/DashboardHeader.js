@@ -10,6 +10,10 @@ import {
   Menu,
   MenuItem,
   Divider,
+  Badge,
+  ListItemIcon,
+  ListItemText,
+  Typography as MuiTypography,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -17,10 +21,13 @@ import {
   Settings as SettingsIcon,
   Logout as LogoutIcon,
   Menu as MenuIcon,
+  ShoppingCart as ShoppingCartIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useMediaQuery, useTheme } from '@mui/material';
+import useNotifications from '../../hooks/useNotifications';
 
 const DashboardHeader = ({ onMenuClick }) => {
   const { restaurant, user, logout } = useAuth();
@@ -28,6 +35,15 @@ const DashboardHeader = ({ onMenuClick }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notificationsAnchorEl, setNotificationsAnchorEl] = React.useState(null);
+  
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    removeNotification,
+  } = useNotifications(restaurant?.id);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -41,6 +57,36 @@ const DashboardHeader = ({ onMenuClick }) => {
     handleMenuClose();
     await logout();
     navigate('/');
+  };
+
+  const handleNotificationsOpen = (event) => {
+    setNotificationsAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setNotificationsAnchorEl(null);
+  };
+
+  const handleNotificationClick = (notification) => {
+    markAsRead(notification.id);
+    handleNotificationsClose();
+    // Navegar para a página de pedidos com o orderId
+    navigate(`/dashboard/orders?orderId=${notification.orderId}`);
+  };
+
+  const formatNotificationTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Agora';
+    if (diffMins < 60) return `${diffMins} min atrás`;
+    if (diffHours < 24) return `${diffHours}h atrás`;
+    if (diffDays < 7) return `${diffDays}d atrás`;
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
   };
 
   return (
@@ -101,6 +147,7 @@ const DashboardHeader = ({ onMenuClick }) => {
             whileTap={{ scale: 0.9 }}
             color="inherit"
             size="small"
+            onClick={handleNotificationsOpen}
             sx={{
               display: { xs: 'none', sm: 'flex' },
               backgroundColor: 'action.hover',
@@ -109,8 +156,105 @@ const DashboardHeader = ({ onMenuClick }) => {
               },
             }}
           >
-            <NotificationsIcon />
+            <Badge badgeContent={unreadCount} color="error">
+              <NotificationsIcon />
+            </Badge>
           </IconButton>
+
+          <Menu
+            anchorEl={notificationsAnchorEl}
+            open={Boolean(notificationsAnchorEl)}
+            onClose={handleNotificationsClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            PaperProps={{
+              sx: {
+                width: 360,
+                maxHeight: 500,
+                mt: 1,
+              },
+            }}
+          >
+            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid', borderColor: 'divider' }}>
+              <MuiTypography variant="h6" sx={{ fontWeight: 700 }}>
+                Notificações
+              </MuiTypography>
+              {unreadCount > 0 && (
+                <MenuItem onClick={markAllAsRead} dense>
+                  <MuiTypography variant="caption" sx={{ color: 'primary.main' }}>
+                    Marcar todas como lidas
+                  </MuiTypography>
+                </MenuItem>
+              )}
+            </Box>
+            <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+              {notifications.length === 0 ? (
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                  <MuiTypography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Nenhuma notificação
+                  </MuiTypography>
+                </Box>
+              ) : (
+                notifications.map((notification) => (
+                  <MenuItem
+                    key={notification.id}
+                    onClick={() => handleNotificationClick(notification)}
+                    sx={{
+                      backgroundColor: notification.read ? 'transparent' : 'action.hover',
+                      borderLeft: notification.read ? 'none' : '3px solid',
+                      borderColor: 'primary.main',
+                      py: 1.5,
+                      px: 2,
+                    }}
+                  >
+                    <ListItemIcon>
+                      <ShoppingCartIcon sx={{ color: notification.read ? 'text.secondary' : 'primary.main' }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <MuiTypography
+                          variant="body2"
+                          sx={{
+                            fontWeight: notification.read ? 400 : 600,
+                            color: notification.read ? 'text.secondary' : 'text.primary',
+                          }}
+                        >
+                          {notification.title}
+                        </MuiTypography>
+                      }
+                      secondary={
+                        <Box>
+                          <MuiTypography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                            {notification.message}
+                          </MuiTypography>
+                          <MuiTypography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                            {formatNotificationTime(notification.timestamp)}
+                          </MuiTypography>
+                        </Box>
+                      }
+                    />
+                    {!notification.read && (
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: 'primary.main',
+                          ml: 1,
+                        }}
+                      />
+                    )}
+                  </MenuItem>
+                ))
+              )}
+            </Box>
+          </Menu>
 
           <IconButton
             onClick={handleMenuOpen}
