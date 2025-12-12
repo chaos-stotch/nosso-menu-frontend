@@ -63,7 +63,7 @@ const PERIOD_LABELS = {
   [PERIODS.ALL]: 'Todo período',
 };
 
-const COLORS = ['#ff6b19', '#1a1a1a', '#4caf50', '#ffd700', '#2196f3', '#9c27b0'];
+const COLORS = ['#dc2626', '#1a1a1a', '#4caf50', '#ffd700', '#2196f3', '#9c27b0'];
 
 const StatCard = ({ icon: Icon, title, value, subtitle, color = 'primary', trend }) => (
   <Card
@@ -72,7 +72,7 @@ const StatCard = ({ icon: Icon, title, value, subtitle, color = 'primary', trend
     animate={{ opacity: 1, y: 0 }}
     sx={{
       height: '100%',
-      background: `linear-gradient(135deg, ${color === 'primary' ? '#1a1a1a' : color === 'secondary' ? '#ff6b19' : color === 'success' ? '#4caf50' : '#ffd700'} 0%, ${color === 'primary' ? '#3a3a3a' : color === 'secondary' ? '#e85b0e' : color === 'success' ? '#388e3c' : '#ccac00'} 100%)`,
+      background: `linear-gradient(135deg, ${color === 'primary' ? '#1a1a1a' : color === 'secondary' ? '#dc2626' : color === 'success' ? '#4caf50' : '#ffd700'} 0%, ${color === 'primary' ? '#3a3a3a' : color === 'secondary' ? '#b91c1c' : color === 'success' ? '#388e3c' : '#ccac00'} 100%)`,
       color: 'white',
       position: 'relative',
       overflow: 'hidden',
@@ -476,10 +476,10 @@ const RevenueAnalytics = () => {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="#ff6b19"
+                  stroke="#dc2626"
                   strokeWidth={3}
                   name="Faturamento"
-                  dot={{ fill: '#ff6b19', r: 4 }}
+                  dot={{ fill: '#dc2626', r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>

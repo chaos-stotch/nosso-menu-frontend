@@ -219,7 +219,7 @@ const PromotionsManagement = () => {
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  background: 'linear-gradient(135deg, #ff6b19 0%, #e85b0e 100%)',
+                  background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
                   color: 'white',
                   position: 'relative',
                   overflow: 'hidden',

@@ -4,7 +4,7 @@ import { createRestaurantTheme } from '../../utils/createTheme';
 
 const RestaurantThemeProvider = ({ restaurant, children }) => {
   const theme = useMemo(() => {
-    const primaryColor = restaurant?.primaryColor || '#ff6b19';
+    const primaryColor = restaurant?.primaryColor || '#dc2626';
     return createRestaurantTheme(primaryColor);
   }, [restaurant?.primaryColor]);
 

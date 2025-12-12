@@ -424,7 +424,7 @@ const ProductsManagement = () => {
                         label="Mais Vendido"
                         size="small"
                         sx={{
-                          backgroundColor: '#ff6b19',
+                          backgroundColor: '#dc2626',
                           color: 'white',
                           fontWeight: 600,
                         }}

@@ -32,7 +32,7 @@ const StatCard = ({ icon: Icon, title, value, subtitle, color = 'primary' }) => 
     transition={{ duration: 0.4 }}
     sx={{
       height: '100%',
-      background: `linear-gradient(135deg, ${color === 'primary' ? '#1a1a1a' : color === 'secondary' ? '#ff6b19' : color === 'success' ? '#4caf50' : '#ffd700'} 0%, ${color === 'primary' ? '#3a3a3a' : color === 'secondary' ? '#e85b0e' : color === 'success' ? '#388e3c' : '#ccac00'} 100%)`,
+      background: `linear-gradient(135deg, ${color === 'primary' ? '#1a1a1a' : color === 'secondary' ? '#dc2626' : color === 'success' ? '#4caf50' : '#ffd700'} 0%, ${color === 'primary' ? '#3a3a3a' : color === 'secondary' ? '#b91c1c' : color === 'success' ? '#388e3c' : '#ccac00'} 100%)`,
       color: 'white',
       position: 'relative',
       overflow: 'hidden',

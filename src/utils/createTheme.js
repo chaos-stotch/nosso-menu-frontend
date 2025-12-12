@@ -93,7 +93,7 @@ const isLightColor = (hex) => {
   return brightness > 200;
 };
 
-export const createRestaurantTheme = (primaryColor = '#ff6b19') => {
+export const createRestaurantTheme = (primaryColor = '#dc2626') => {
   const baseShadowColor = 'rgba(0, 0, 0, 0.1)';
   
   // Calcular cores derivadas

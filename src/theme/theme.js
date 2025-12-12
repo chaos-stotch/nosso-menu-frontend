@@ -59,9 +59,9 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#ff6b19',
-      light: '#fff',
-      dark: '#e85b0e',
+      main: '#dc2626',
+      light: '#ef4444',
+      dark: '#b91c1c',
       contrastText: '#ffffff',
     },
     background: {
@@ -81,7 +81,7 @@ const theme = createTheme({
       main: '#ff9800',
     },
     error: {
-      main: '#ff6b19',
+      main: '#dc2626',
     },
     info: {
       main: '#ffd700',
@@ -108,7 +108,7 @@ const theme = createTheme({
         contrastText: '#1a1a1a',
       },
       bestSeller: {
-        main: '#ff6b19',
+        main: '#dc2626',
         contrastText: '#ffffff',
       },
     },
@@ -117,8 +117,8 @@ const theme = createTheme({
       default: 'rgba(0, 0, 0, 0.1)',
       light: 'rgba(0, 0, 0, 0.05)',
       dark: 'rgba(0, 0, 0, 0.2)',
-      secondary: 'rgba(255, 107, 25, 0.22)',
-      secondaryLight: 'rgba(255, 107, 25, 0.4)', // Para sombras mais leves do secondary
+      secondary: 'rgba(220, 38, 38, 0.22)',
+      secondaryLight: 'rgba(220, 38, 38, 0.4)', // Para sombras mais leves do secondary
     },
   },
   typography: {

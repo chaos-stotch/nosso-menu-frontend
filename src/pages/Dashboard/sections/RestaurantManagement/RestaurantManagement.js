@@ -168,7 +168,7 @@ const RestaurantManagement = () => {
         openingHours: restaurant.openingHours,
         coverImage: restaurant.coverImage,
         logo: restaurant.logo,
-        primaryColor: restaurant.primaryColor || '#ff6b19',
+        primaryColor: restaurant.primaryColor || '#dc2626',
         acceptedPaymentMethods: Array.isArray(restaurant.acceptedPaymentMethods) 
           ? restaurant.acceptedPaymentMethods 
           : (restaurant.acceptedPaymentMethods ? [restaurant.acceptedPaymentMethods] : ['pix', 'card', 'cash']),
@@ -519,7 +519,7 @@ const RestaurantManagement = () => {
                   fullWidth
                   label="Cor Primária"
                   type="color"
-                  value={restaurant.primaryColor || '#ff6b19'}
+                  value={restaurant.primaryColor || '#dc2626'}
                   onChange={(e) => handleChange('primaryColor', e.target.value)}
                   variant="outlined"
                   InputLabelProps={{
@@ -532,7 +532,7 @@ const RestaurantManagement = () => {
                           width: 40,
                           height: 40,
                           borderRadius: 1,
-                          backgroundColor: restaurant.primaryColor || '#ff6b19',
+                          backgroundColor: restaurant.primaryColor || '#dc2626',
                           border: '1px solid',
                           borderColor: 'divider',
                           mr: 1,
