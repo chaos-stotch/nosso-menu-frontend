@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Container,
@@ -33,6 +33,16 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
   const { currentOrder } = useOrder();
   const navigate = useNavigate();
   const { slug } = useParams();
+
+  // Ajustar tipo de entrega se o restaurante não aceitar o selecionado
+  useEffect(() => {
+    if (restaurant?.acceptedDeliveryTypes && restaurant.acceptedDeliveryTypes.length > 0) {
+      if (!restaurant.acceptedDeliveryTypes.includes(deliveryType)) {
+        // Se o tipo atual não está aceito, mudar para o primeiro aceito
+        handleDeliveryTypeChange(restaurant.acceptedDeliveryTypes[0]);
+      }
+    }
+  }, [restaurant?.acceptedDeliveryTypes, deliveryType, handleDeliveryTypeChange]);
 
   // Verificar se restaurant existe
   if (!restaurant) {
@@ -271,41 +281,52 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
             }}
           >
             {/* Toggle Entrega/Retirada */}
-            <ToggleButtonGroup
-              value={deliveryType}
-              exclusive
-              onChange={(e, newValue) => handleDeliveryTypeChange(newValue)}
-              size="small"
-              sx={{
-                '& .MuiToggleButton-root': {
-                  px: { xs: 1.5, sm: 2 },
-                  py: 0.75,
-                  textTransform: 'none',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  fontWeight: 600,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  '&.Mui-selected': {
-                    backgroundColor: 'secondary.main',
-                color: 'white',
-                    '&:hover': {
-                      backgroundColor: 'secondary.dark',
+            {restaurant?.acceptedDeliveryTypes && restaurant.acceptedDeliveryTypes.length > 0 && (
+              <ToggleButtonGroup
+                value={deliveryType}
+                exclusive
+                onChange={(e, newValue) => {
+                  if (newValue !== null) {
+                    handleDeliveryTypeChange(newValue);
+                  }
+                }}
+                size="small"
+                sx={{
+                  '& .MuiToggleButton-root': {
+                    px: { xs: 1.5, sm: 2 },
+                    py: 0.75,
+                    textTransform: 'none',
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    fontWeight: 600,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    '&.Mui-selected': {
+                      backgroundColor: 'secondary.main',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'secondary.dark',
+                      },
                     },
                   },
-                },
-              }}
-            >
-              <ToggleButton value="delivery">
-                <LocalShipping sx={{ fontSize: { xs: 16, sm: 18 }, mr: 0.5 }} />
-                Entrega
-              </ToggleButton>
-              <ToggleButton value="pickup">
-                <Store sx={{ fontSize: { xs: 16, sm: 18 }, mr: 0.5 }} />
-                Retirada
-              </ToggleButton>
-            </ToggleButtonGroup>
+                }}
+              >
+                {restaurant.acceptedDeliveryTypes.includes('delivery') && (
+                  <ToggleButton value="delivery">
+                    <LocalShipping sx={{ fontSize: { xs: 16, sm: 18 }, mr: 0.5 }} />
+                    Entrega
+                  </ToggleButton>
+                )}
+                {restaurant.acceptedDeliveryTypes.includes('pickup') && (
+                  <ToggleButton value="pickup">
+                    <Store sx={{ fontSize: { xs: 16, sm: 18 }, mr: 0.5 }} />
+                    Retirada
+                  </ToggleButton>
+                )}
+              </ToggleButtonGroup>
+            )}
 
-            {deliveryType === 'delivery' && (
+            {deliveryType === 'delivery' && 
+             (!restaurant.acceptedDeliveryTypes || restaurant.acceptedDeliveryTypes.includes('delivery')) && (
               <>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary' }}>
                   <LocalShipping sx={{ fontSize: { xs: 18, sm: 20 }, color: 'text.secondary' }} />
@@ -323,7 +344,8 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
               </>
             )}
 
-            {deliveryType === 'pickup' && (
+            {deliveryType === 'pickup' && 
+             (!restaurant.acceptedDeliveryTypes || restaurant.acceptedDeliveryTypes.includes('pickup')) && (
               <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary' }}>
                 <AccessTime sx={{ fontSize: { xs: 18, sm: 20 }, color: 'text.secondary' }} />
                 <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, fontWeight: 500 }}>

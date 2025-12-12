@@ -42,9 +42,19 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
   const { items, getSubtotal, clearCart } = useCartContext();
-  const { deliveryType } = useDelivery();
+  const { deliveryType, handleDeliveryTypeChange } = useDelivery();
   const { restaurant, loading: restaurantLoading } = useRestaurant(slug);
   const { createOrder, markPaymentAsPaid, currentOrder } = useOrder();
+
+  // Ajustar tipo de entrega se o restaurante não aceitar o selecionado
+  React.useEffect(() => {
+    if (restaurant?.acceptedDeliveryTypes && restaurant.acceptedDeliveryTypes.length > 0) {
+      if (!restaurant.acceptedDeliveryTypes.includes(deliveryType)) {
+        // Se o tipo atual não está aceito, mudar para o primeiro aceito
+        handleDeliveryTypeChange(restaurant.acceptedDeliveryTypes[0]);
+      }
+    }
+  }, [restaurant?.acceptedDeliveryTypes, deliveryType, handleDeliveryTypeChange]);
   
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentSubMethod, setPaymentSubMethod] = useState('');
@@ -418,7 +428,8 @@ const Checkout = () => {
               </Paper>
 
               {/* Endereço de Entrega */}
-              {deliveryType === 'delivery' && (
+              {deliveryType === 'delivery' && 
+               (!restaurant.acceptedDeliveryTypes || restaurant.acceptedDeliveryTypes.includes('delivery')) && (
                 <Paper
                   component={motion.div}
                   initial={{ opacity: 0, y: 20 }}
@@ -538,6 +549,7 @@ const Checkout = () => {
                     onChange={handlePaymentMethodChange}
                   >
                     {/* PIX */}
+                    {(!restaurant.acceptedPaymentMethods || restaurant.acceptedPaymentMethods.includes('pix')) && (
                     <Paper
                       component={motion.div}
                       whileHover={{ scale: 1.02 }}
@@ -578,8 +590,12 @@ const Checkout = () => {
                         sx={{ m: 0, width: '100%' }}
                       />
                     </Paper>
+                    )}
 
-                    {/* Pagar na Hora */}
+                    {/* Pagar na Hora - Mostrar apenas se aceitar card ou cash */}
+                    {(!restaurant.acceptedPaymentMethods || 
+                      restaurant.acceptedPaymentMethods.includes('card') || 
+                      restaurant.acceptedPaymentMethods.includes('cash')) && (
                     <Paper
                       component={motion.div}
                       whileHover={{ scale: 1.02 }}
@@ -623,6 +639,7 @@ const Checkout = () => {
                                     value={paymentSubMethod}
                                     onChange={handlePaymentSubMethodChange}
                                   >
+                                    {(!restaurant.acceptedPaymentMethods || restaurant.acceptedPaymentMethods.includes('card')) && (
                                     <FormControlLabel
                                       value="card"
                                       control={<Radio size="small" />}
@@ -633,6 +650,8 @@ const Checkout = () => {
                                         </Box>
                                       }
                                     />
+                                    )}
+                                    {(!restaurant.acceptedPaymentMethods || restaurant.acceptedPaymentMethods.includes('cash')) && (
                                     <FormControlLabel
                                       value="cash"
                                       control={<Radio size="small" />}
@@ -643,6 +662,7 @@ const Checkout = () => {
                                         </Box>
                                       }
                                     />
+                                    )}
                                   </RadioGroup>
                                 </FormControl>
                               </Box>
@@ -652,6 +672,7 @@ const Checkout = () => {
                         sx={{ m: 0, width: '100%' }}
                       />
                     </Paper>
+                    )}
                   </RadioGroup>
                 </FormControl>
               </Paper>
@@ -729,7 +750,8 @@ const Checkout = () => {
                     {formatCurrency(subtotal)}
                   </Typography>
                 </Box>
-                {deliveryType === 'delivery' && (
+                {deliveryType === 'delivery' && 
+                 (!restaurant.acceptedDeliveryTypes || restaurant.acceptedDeliveryTypes.includes('delivery')) && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                       Taxa de entrega

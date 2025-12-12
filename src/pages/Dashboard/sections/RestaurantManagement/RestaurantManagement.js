@@ -10,6 +10,8 @@ import {
   Divider,
   Switch,
   FormControlLabel,
+  FormGroup,
+  Checkbox,
   Chip,
   Stack,
   CircularProgress,
@@ -42,7 +44,13 @@ const RestaurantManagement = () => {
 
   useEffect(() => {
     if (authRestaurant) {
-      setRestaurant(authRestaurant);
+      // Garantir valores padrão para métodos de pagamento e tipos de entrega
+      const restaurantWithDefaults = {
+        ...authRestaurant,
+        acceptedPaymentMethods: authRestaurant.acceptedPaymentMethods || ['pix', 'card', 'cash'],
+        acceptedDeliveryTypes: authRestaurant.acceptedDeliveryTypes || ['delivery', 'pickup'],
+      };
+      setRestaurant(restaurantWithDefaults);
       setLoading(false);
     } else if (user) {
       loadRestaurant();
@@ -56,7 +64,13 @@ const RestaurantManagement = () => {
       setLoading(true);
       const data = await api.getRestaurantByUserId(user.id);
       if (data) {
-        setRestaurant(data);
+        // Garantir valores padrão para métodos de pagamento e tipos de entrega
+        const restaurantWithDefaults = {
+          ...data,
+          acceptedPaymentMethods: data.acceptedPaymentMethods || ['pix', 'card', 'cash'],
+          acceptedDeliveryTypes: data.acceptedDeliveryTypes || ['delivery', 'pickup'],
+        };
+        setRestaurant(restaurantWithDefaults);
         setError(null);
       }
     } catch (err) {
@@ -84,6 +98,56 @@ const RestaurantManagement = () => {
     }));
   };
 
+  const handlePaymentMethodChange = (method, checked) => {
+    setRestaurant((prev) => {
+      const currentMethods = prev.acceptedPaymentMethods || ['pix', 'card', 'cash'];
+      let newMethods;
+      
+      if (checked) {
+        newMethods = [...currentMethods, method];
+      } else {
+        newMethods = currentMethods.filter(m => m !== method);
+      }
+      
+      // Validar que pelo menos um método está selecionado
+      if (newMethods.length === 0) {
+        setError('Selecione pelo menos um método de pagamento');
+        return prev;
+      }
+      
+      setError(null);
+      return {
+        ...prev,
+        acceptedPaymentMethods: newMethods,
+      };
+    });
+  };
+
+  const handleDeliveryTypeChange = (type, checked) => {
+    setRestaurant((prev) => {
+      const currentTypes = prev.acceptedDeliveryTypes || ['delivery', 'pickup'];
+      let newTypes;
+      
+      if (checked) {
+        newTypes = [...currentTypes, type];
+      } else {
+        newTypes = currentTypes.filter(t => t !== type);
+      }
+      
+      // Validar que pelo menos um tipo está selecionado
+      if (newTypes.length === 0) {
+        setError('Selecione pelo menos um tipo de entrega');
+        return prev;
+      }
+      
+      setError(null);
+      return {
+        ...prev,
+        acceptedDeliveryTypes: newTypes,
+      };
+    });
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -105,10 +169,25 @@ const RestaurantManagement = () => {
         coverImage: restaurant.coverImage,
         logo: restaurant.logo,
         primaryColor: restaurant.primaryColor || '#ff6b19',
+        acceptedPaymentMethods: Array.isArray(restaurant.acceptedPaymentMethods) 
+          ? restaurant.acceptedPaymentMethods 
+          : (restaurant.acceptedPaymentMethods ? [restaurant.acceptedPaymentMethods] : ['pix', 'card', 'cash']),
+        acceptedDeliveryTypes: Array.isArray(restaurant.acceptedDeliveryTypes) 
+          ? restaurant.acceptedDeliveryTypes 
+          : (restaurant.acceptedDeliveryTypes ? [restaurant.acceptedDeliveryTypes] : ['delivery', 'pickup']),
       };
 
+      console.log('Sending update data:', updateData);
+      console.log('Accepted payment methods:', updateData.acceptedPaymentMethods);
+      console.log('Accepted delivery types:', updateData.acceptedDeliveryTypes);
+      
       const updated = await api.updateRestaurant(updateData);
       if (updated) {
+        console.log('Received updated restaurant:', updated);
+        console.log('Received accepted payment methods:', updated.acceptedPaymentMethods);
+        console.log('Received accepted delivery types:', updated.acceptedDeliveryTypes);
+        
+        // Usar os valores retornados diretamente, sem aplicar valores padrão
         setRestaurant(updated);
         // Atualizar o restaurante no contexto de autenticação
         if (refreshRestaurant) {
@@ -463,6 +542,75 @@ const RestaurantManagement = () => {
                   }}
                   helperText="Cor usada em hover e destaques"
                 />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                  Métodos de Pagamento Aceitos
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                  Selecione os métodos de pagamento que seu restaurante aceita. Pelo menos um deve estar selecionado.
+                </Typography>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={(restaurant.acceptedPaymentMethods || ['pix', 'card', 'cash']).includes('pix')}
+                        onChange={(e) => handlePaymentMethodChange('pix', e.target.checked)}
+                      />
+                    }
+                    label="PIX"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={(restaurant.acceptedPaymentMethods || ['pix', 'card', 'cash']).includes('card')}
+                        onChange={(e) => handlePaymentMethodChange('card', e.target.checked)}
+                      />
+                    }
+                    label="Cartão (Maquininha)"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={(restaurant.acceptedPaymentMethods || ['pix', 'card', 'cash']).includes('cash')}
+                        onChange={(e) => handlePaymentMethodChange('cash', e.target.checked)}
+                      />
+                    }
+                    label="Dinheiro"
+                  />
+                </FormGroup>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                  Opções de Entrega
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                  Selecione as opções de entrega que seu restaurante oferece. Pelo menos uma deve estar selecionada.
+                </Typography>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={(restaurant.acceptedDeliveryTypes || ['delivery', 'pickup']).includes('delivery')}
+                        onChange={(e) => handleDeliveryTypeChange('delivery', e.target.checked)}
+                      />
+                    }
+                    label="Entrega"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={(restaurant.acceptedDeliveryTypes || ['delivery', 'pickup']).includes('pickup')}
+                        onChange={(e) => handleDeliveryTypeChange('pickup', e.target.checked)}
+                      />
+                    }
+                    label="Retirada no Local"
+                  />
+                </FormGroup>
               </Grid>
             </Grid>
           </Paper>
