@@ -425,7 +425,7 @@ const RestaurantHeader = ({ restaurant, onStartOrder }) => {
                   sx={{
                     p: { xs: 1.5, sm: 2 },
                     flex: 1,
-                    backgroundColor: 'secondary.light',
+                    backgroundColor: 'background.paper',
                     border: '2px solid',
                     borderColor: 'secondary.main',
                   }}

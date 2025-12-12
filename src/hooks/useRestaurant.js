@@ -29,12 +29,28 @@ const useRestaurant = (slug = null) => {
         }
         
         const restaurantId = restaurantData.id;
+        
+        // Buscar categorias e produtos (essenciais)
         const [categoriesData, productsData] = await Promise.all([
           api.getCategories(restaurantId),
           api.getProducts(restaurantId),
         ]);
         
-        setRestaurant(restaurantData);
+        // Buscar promoções (opcional - não deve quebrar se falhar)
+        let promotionsData = [];
+        try {
+          promotionsData = await api.getPromotions(restaurantId);
+        } catch (err) {
+          console.warn('Error loading promotions:', err);
+        }
+        
+        // Adicionar promoções ao objeto do restaurante
+        const restaurantWithPromotions = {
+          ...restaurantData,
+          promotions: promotionsData || [],
+        };
+        
+        setRestaurant(restaurantWithPromotions);
         setCategories(categoriesData || []);
         setProducts(productsData || []);
         setError(null);
@@ -81,12 +97,28 @@ const useRestaurant = (slug = null) => {
       if (!restaurantData) return;
       
       const restaurantId = restaurantData.id;
+      
+      // Buscar categorias e produtos (essenciais)
       const [categoriesData, productsData] = await Promise.all([
         api.getCategories(restaurantId),
         api.getProducts(restaurantId),
       ]);
       
-      setRestaurant(restaurantData);
+      // Buscar promoções (opcional - não deve quebrar se falhar)
+      let promotionsData = [];
+      try {
+        promotionsData = await api.getPromotions(restaurantId);
+      } catch (err) {
+        console.warn('Error loading promotions:', err);
+      }
+      
+      // Adicionar promoções ao objeto do restaurante
+      const restaurantWithPromotions = {
+        ...restaurantData,
+        promotions: promotionsData || [],
+      };
+      
+      setRestaurant(restaurantWithPromotions);
       setCategories(categoriesData || []);
       setProducts(productsData || []);
     } catch (err) {

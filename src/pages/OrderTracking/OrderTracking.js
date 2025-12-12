@@ -303,11 +303,11 @@ const OrderTracking = () => {
                     }
                     
                     return message ? (
-                      <StepContent>
-                        <Alert severity="info" sx={{ mt: 1 }}>
+                    <StepContent>
+                      <Alert severity="info" sx={{ mt: 1 }}>
                           {message}
-                        </Alert>
-                      </StepContent>
+                      </Alert>
+                    </StepContent>
                     ) : null;
                   })()}
                 </Step>

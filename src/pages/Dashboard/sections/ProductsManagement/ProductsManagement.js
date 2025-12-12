@@ -174,13 +174,13 @@ const ProductsManagement = () => {
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm.id) return;
     
-    try {
-      setError(null);
+      try {
+        setError(null);
       await api.deleteProduct(deleteConfirm.id);
-      await loadData();
-    } catch (err) {
-      console.error('Error deleting product:', err);
-      setError(err.message || 'Erro ao deletar produto');
+        await loadData();
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        setError(err.message || 'Erro ao deletar produto');
     } finally {
       setDeleteConfirm({ open: false, id: null });
     }

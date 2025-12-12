@@ -126,13 +126,13 @@ const PromotionsManagement = () => {
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm.id) return;
     
-    try {
-      setError(null);
+      try {
+        setError(null);
       await api.deletePromotion(deleteConfirm.id);
-      await loadPromotions();
-    } catch (err) {
-      console.error('Error deleting promotion:', err);
-      setError(err.message || 'Erro ao deletar promoção');
+        await loadPromotions();
+      } catch (err) {
+        console.error('Error deleting promotion:', err);
+        setError(err.message || 'Erro ao deletar promoção');
     } finally {
       setDeleteConfirm({ open: false, id: null });
     }

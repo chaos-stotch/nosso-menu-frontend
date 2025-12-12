@@ -135,13 +135,13 @@ const CategoriesManagement = () => {
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm.id) return;
     
-    try {
-      setError(null);
+      try {
+        setError(null);
       await api.deleteCategory(deleteConfirm.id);
-      await loadData();
-    } catch (err) {
-      console.error('Error deleting category:', err);
-      setError(err.message || 'Erro ao deletar categoria');
+        await loadData();
+      } catch (err) {
+        console.error('Error deleting category:', err);
+        setError(err.message || 'Erro ao deletar categoria');
     } finally {
       setDeleteConfirm({ open: false, id: null });
     }
