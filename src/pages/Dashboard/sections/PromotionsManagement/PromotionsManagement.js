@@ -27,6 +27,7 @@ import {
 import { motion } from 'framer-motion';
 import api from '../../../../services/api';
 import { useAuth } from '../../../../contexts/AuthContext';
+import ConfirmDialog from '../../../../components/ConfirmDialog/ConfirmDialog';
 
 const PromotionsManagement = () => {
   const { restaurant } = useAuth();
@@ -36,6 +37,7 @@ const PromotionsManagement = () => {
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -117,16 +119,22 @@ const PromotionsManagement = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir esta promoção?')) {
-      try {
-        setError(null);
-        await api.deletePromotion(id);
-        await loadPromotions();
-      } catch (err) {
-        console.error('Error deleting promotion:', err);
-        setError(err.message || 'Erro ao deletar promoção');
-    }
+  const handleDeleteClick = (id) => {
+    setDeleteConfirm({ open: true, id });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.id) return;
+    
+    try {
+      setError(null);
+      await api.deletePromotion(deleteConfirm.id);
+      await loadPromotions();
+    } catch (err) {
+      console.error('Error deleting promotion:', err);
+      setError(err.message || 'Erro ao deletar promoção');
+    } finally {
+      setDeleteConfirm({ open: false, id: null });
     }
   };
 
@@ -263,7 +271,7 @@ const PromotionsManagement = () => {
                   </IconButton>
                   <IconButton
                     size="small"
-                    onClick={() => handleDelete(promotion.id)}
+                    onClick={() => handleDeleteClick(promotion.id)}
                     sx={{
                       color: 'white',
                       backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -328,6 +336,17 @@ const PromotionsManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null })}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir Promoção"
+        message="Tem certeza que deseja excluir esta promoção? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        severity="error"
+      />
     </Box>
   );
 };

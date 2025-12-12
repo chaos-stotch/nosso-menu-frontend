@@ -99,7 +99,7 @@ const DashboardHeader = ({ onMenuClick }) => {
         borderColor: 'divider',
         color: 'text.primary',
         borderRadius: 0,
-        borderBottomLeftRadius: { xs: 20, md: 20 },
+        borderBottomLeftRadius: { xs: 0, md: 20 },
       }}
     >
       <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>

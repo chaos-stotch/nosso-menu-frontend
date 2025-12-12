@@ -46,6 +46,7 @@ import { motion } from 'framer-motion';
 import { formatCurrency } from '../../../../utils/mockData';
 import api from '../../../../services/api';
 import { useAuth } from '../../../../contexts/AuthContext';
+import ConfirmDialog from '../../../../components/ConfirmDialog/ConfirmDialog';
 
 const ProductsManagement = () => {
   const { restaurant } = useAuth();
@@ -57,6 +58,7 @@ const ProductsManagement = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -165,16 +167,22 @@ const ProductsManagement = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir este produto?')) {
-      try {
-        setError(null);
-        await api.deleteProduct(id);
-        await loadData();
-      } catch (err) {
-        console.error('Error deleting product:', err);
-        setError(err.message || 'Erro ao deletar produto');
-      }
+  const handleDeleteClick = (id) => {
+    setDeleteConfirm({ open: true, id });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.id) return;
+    
+    try {
+      setError(null);
+      await api.deleteProduct(deleteConfirm.id);
+      await loadData();
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      setError(err.message || 'Erro ao deletar produto');
+    } finally {
+      setDeleteConfirm({ open: false, id: null });
     }
   };
 
@@ -434,7 +442,7 @@ const ProductsManagement = () => {
                   </IconButton>
                   <IconButton
                     color="error"
-                    onClick={() => handleDelete(product.id)}
+                    onClick={() => handleDeleteClick(product.id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -768,6 +776,17 @@ const ProductsManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null })}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir Produto"
+        message="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        severity="error"
+      />
     </Box>
   );
 };

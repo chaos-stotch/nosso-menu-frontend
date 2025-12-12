@@ -14,6 +14,7 @@ import {
   Stack,
   CircularProgress,
   Alert,
+  Snackbar,
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -37,6 +38,7 @@ const RestaurantManagement = () => {
   const [copied, setCopied] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     if (authRestaurant) {
@@ -112,7 +114,11 @@ const RestaurantManagement = () => {
         if (refreshRestaurant) {
           await refreshRestaurant();
         }
-        alert('Informações salvas com sucesso!');
+        setSnackbar({
+          open: true,
+          message: 'Informações salvas com sucesso!',
+          severity: 'success',
+        });
       }
     } catch (err) {
       console.error('Error saving restaurant:', err);
@@ -685,6 +691,21 @@ const RestaurantManagement = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

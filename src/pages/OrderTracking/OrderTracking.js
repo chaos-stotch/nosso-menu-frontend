@@ -135,7 +135,13 @@ const OrderTracking = () => {
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => slug ? navigate(`/${slug}`) : navigate('/')}
-          sx={{ mb: 3 }}
+          sx={(theme) => ({ 
+            mb: 3,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+            },
+          })}
         >
           Voltar para o Cardápio
         </Button>
@@ -284,21 +290,26 @@ const OrderTracking = () => {
                       {step.label}
                     </Typography>
                   </StepLabel>
-                  {isActive && (
-                    <StepContent>
-                      <Alert severity="info" sx={{ mt: 1 }}>
-                        {step.status === ORDER_STATUS.PREPARING &&
-                          'Seu pedido está sendo preparado com carinho!'}
-                        {step.status === ORDER_STATUS.READY &&
-                          currentOrder.deliveryType === 'pickup' &&
-                          'Seu pedido está pronto para retirada!'}
-                        {step.status === ORDER_STATUS.OUT_FOR_DELIVERY &&
-                          'Seu pedido saiu para entrega. Em breve chegará!'}
-                        {step.status === ORDER_STATUS.DELIVERED &&
-                          'Pedido entregue com sucesso! Obrigado pela preferência.'}
-                      </Alert>
-                    </StepContent>
-                  )}
+                  {isActive && (() => {
+                    let message = '';
+                    if (step.status === ORDER_STATUS.PREPARING) {
+                      message = 'Seu pedido está sendo preparado com carinho!';
+                    } else if (step.status === ORDER_STATUS.READY && currentOrder.deliveryType === 'pickup') {
+                      message = 'Seu pedido está pronto para retirada!';
+                    } else if (step.status === ORDER_STATUS.OUT_FOR_DELIVERY) {
+                      message = 'Seu pedido saiu para entrega. Em breve chegará!';
+                    } else if (step.status === ORDER_STATUS.DELIVERED) {
+                      message = 'Pedido entregue com sucesso! Obrigado pela preferência.';
+                    }
+                    
+                    return message ? (
+                      <StepContent>
+                        <Alert severity="info" sx={{ mt: 1 }}>
+                          {message}
+                        </Alert>
+                      </StepContent>
+                    ) : null;
+                  })()}
                 </Step>
               );
             })}

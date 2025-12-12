@@ -18,6 +18,7 @@ import {
   IconButton,
   Alert,
   CircularProgress,
+  Snackbar,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -63,6 +64,7 @@ const Checkout = () => {
   });
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [showPixQRCode, setShowPixQRCode] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
 
   // Redirecionar se não tiver slug
   React.useEffect(() => {
@@ -137,12 +139,20 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     if (!isFormValid()) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+      setSnackbar({
+        open: true,
+        message: 'Por favor, preencha todos os campos obrigatórios.',
+        severity: 'warning',
+      });
       return;
     }
 
     if (!restaurant || !restaurant.id) {
-      alert('Erro: Restaurante não encontrado. Por favor, recarregue a página.');
+      setSnackbar({
+        open: true,
+        message: 'Erro: Restaurante não encontrado. Por favor, recarregue a página.',
+        severity: 'error',
+      });
       return;
     }
 
@@ -191,7 +201,11 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error('Erro ao criar pedido:', error);
-      alert(`Erro ao criar pedido: ${error.message || 'Verifique se o backend está rodando e tente novamente.'}`);
+      setSnackbar({
+        open: true,
+        message: `Erro ao criar pedido: ${error.message || 'Verifique se o backend está rodando e tente novamente.'}`,
+        severity: 'error',
+      });
     }
   };
 
@@ -336,7 +350,13 @@ const Checkout = () => {
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => slug ? navigate(`/${slug}`) : navigate('/')}
-          sx={{ mb: 3 }}
+          sx={(theme) => ({ 
+            mb: 3,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+            },
+          })}
         >
           Voltar
         </Button>
@@ -370,7 +390,7 @@ const Checkout = () => {
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      label="Nome completo *"
+                      label="Nome completo"
                       value={customerInfo.name}
                       onChange={(e) => handleCustomerInfoChange('name', e.target.value)}
                       required
@@ -379,7 +399,7 @@ const Checkout = () => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      label="Telefone *"
+                      label="Telefone"
                       value={customerInfo.phone}
                       onChange={(e) => handleCustomerInfoChange('phone', e.target.value)}
                       required
@@ -416,7 +436,7 @@ const Checkout = () => {
                     <Grid item xs={12} sm={8}>
                       <TextField
                         fullWidth
-                        label="Rua *"
+                        label="Rua"
                         value={deliveryAddress.street}
                         onChange={(e) => handleAddressChange('street', e.target.value)}
                         required
@@ -425,7 +445,7 @@ const Checkout = () => {
                     <Grid item xs={12} sm={4}>
                       <TextField
                         fullWidth
-                        label="Número *"
+                        label="Número"
                         value={deliveryAddress.number}
                         onChange={(e) => handleAddressChange('number', e.target.value)}
                         required
@@ -442,7 +462,7 @@ const Checkout = () => {
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label="Bairro *"
+                        label="Bairro"
                         value={deliveryAddress.neighborhood}
                         onChange={(e) => handleAddressChange('neighborhood', e.target.value)}
                         required
@@ -769,6 +789,21 @@ const Checkout = () => {
           </Grid>
         </Grid>
       </Container>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
     </RestaurantThemeProvider>
   );

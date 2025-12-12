@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -14,6 +14,8 @@ import {
   Tooltip,
   useMediaQuery,
   useTheme,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -24,6 +26,7 @@ import {
   ShoppingCart as ShoppingCartIcon,
   Visibility as VisibilityIcon,
   Menu as MenuIcon,
+  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
@@ -31,6 +34,7 @@ import { useAuth } from '../../contexts/AuthContext';
 const menuItems = [
   { id: 'overview', label: 'Visão Geral', icon: DashboardIcon, path: '/dashboard' },
   { id: 'orders', label: 'Pedidos', icon: ShoppingCartIcon, path: '/dashboard/orders' },
+  { id: 'revenue', label: 'Faturamento', icon: AnalyticsIcon, path: '/dashboard/revenue' },
   { id: 'restaurant', label: 'Restaurante', icon: RestaurantIcon, path: '/dashboard/restaurant' },
   { id: 'categories', label: 'Categorias', icon: CategoryIcon, path: '/dashboard/categories' },
   { id: 'products', label: 'Produtos', icon: FastfoodIcon, path: '/dashboard/products' },
@@ -42,6 +46,7 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
   const location = useLocation();
   const { restaurant } = useAuth();
   const theme = useTheme();
+  const [snackbar, setSnackbar] = useState({ open: false, message: '' });
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -66,7 +71,10 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
     if (restaurant?.slug) {
       window.open(`/${restaurant.slug}`, '_blank');
     } else {
-      alert('Configure o slug do seu restaurante nas configurações para visualizar a página pública.');
+      setSnackbar({
+        open: true,
+        message: 'Configure o slug do seu restaurante nas configurações para visualizar a página pública.',
+      });
     }
   };
 
@@ -281,6 +289,21 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
       >
         {drawerContent}
       </Drawer>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity="info"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

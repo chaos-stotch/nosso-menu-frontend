@@ -9,6 +9,7 @@ import ProductsManagement from './sections/ProductsManagement/ProductsManagement
 import PromotionsManagement from './sections/PromotionsManagement/PromotionsManagement';
 import OrdersManagement from './sections/OrdersManagement/OrdersManagement';
 import DashboardOverview from './sections/DashboardOverview/DashboardOverview';
+import RevenueAnalytics from './sections/RevenueAnalytics/RevenueAnalytics';
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -73,6 +74,7 @@ const Dashboard = () => {
             <Routes>
               <Route index element={<DashboardOverview />} />
               <Route path="orders" element={<OrdersManagement />} />
+              <Route path="revenue" element={<RevenueAnalytics />} />
               <Route path="restaurant" element={<RestaurantManagement />} />
               <Route path="categories" element={<CategoriesManagement />} />
               <Route path="products" element={<ProductsManagement />} />

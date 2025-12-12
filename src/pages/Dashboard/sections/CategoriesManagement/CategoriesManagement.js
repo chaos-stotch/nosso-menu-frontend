@@ -32,6 +32,7 @@ import api from '../../../../services/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import IconSelector from '../../../../components/IconSelector/IconSelector';
 import { DynamicCategoryIcon } from '../../../../components/CategoryIcon/CategoryIcon';
+import ConfirmDialog from '../../../../components/ConfirmDialog/ConfirmDialog';
 
 const CategoriesManagement = () => {
   const { restaurant } = useAuth();
@@ -41,6 +42,7 @@ const CategoriesManagement = () => {
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -126,16 +128,22 @@ const CategoriesManagement = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir esta categoria?')) {
-      try {
-        setError(null);
-        await api.deleteCategory(id);
-        await loadData();
-      } catch (err) {
-        console.error('Error deleting category:', err);
-        setError(err.message || 'Erro ao deletar categoria');
-    }
+  const handleDeleteClick = (id) => {
+    setDeleteConfirm({ open: true, id });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.id) return;
+    
+    try {
+      setError(null);
+      await api.deleteCategory(deleteConfirm.id);
+      await loadData();
+    } catch (err) {
+      console.error('Error deleting category:', err);
+      setError(err.message || 'Erro ao deletar categoria');
+    } finally {
+      setDeleteConfirm({ open: false, id: null });
     }
   };
 
@@ -254,7 +262,7 @@ const CategoriesManagement = () => {
                   </IconButton>
                   <IconButton
                     color="error"
-                    onClick={() => handleDelete(category.id)}
+                    onClick={() => handleDeleteClick(category.id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -321,6 +329,17 @@ const CategoriesManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null })}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir Categoria"
+        message="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        severity="error"
+      />
     </Box>
   );
 };
