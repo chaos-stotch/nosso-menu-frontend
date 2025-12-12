@@ -250,6 +250,7 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
             borderRight: '1px solid',
             borderColor: 'divider',
             backgroundColor: 'background.paper',
+            borderRadius: 0,
           },
         }}
       >
@@ -269,6 +270,7 @@ const DashboardSidebar = ({ open, onToggle, mobileOpen, onMobileClose, onMobileO
             borderRight: '1px solid',
             borderColor: 'divider',
             backgroundColor: 'background.paper',
+            borderRadius: 0,
             transition: theme.transitions.create('width', {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen,

@@ -26,11 +26,12 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Category as CategoryIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import api from '../../../../services/api';
 import { useAuth } from '../../../../contexts/AuthContext';
+import IconSelector from '../../../../components/IconSelector/IconSelector';
+import { DynamicCategoryIcon } from '../../../../components/CategoryIcon/CategoryIcon';
 
 const CategoriesManagement = () => {
   const { restaurant } = useAuth();
@@ -43,7 +44,7 @@ const CategoriesManagement = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    icon: 'pizzas',
+    icon: 'LocalPizza',
   });
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const CategoriesManagement = () => {
       setFormData({
         name: '',
         description: '',
-        icon: 'pizzas',
+        icon: 'LocalPizza',
       });
     }
     setOpenDialog(true);
@@ -93,7 +94,7 @@ const CategoriesManagement = () => {
     setFormData({
       name: '',
       description: '',
-      icon: 'pizzas',
+      icon: 'LocalPizza',
     });
   };
 
@@ -224,7 +225,7 @@ const CategoriesManagement = () => {
                         height: 40,
                       }}
                     >
-                      <CategoryIcon />
+                      <DynamicCategoryIcon iconName={category.icon} />
                     </Avatar>
                     <Typography variant="body1" sx={{ fontWeight: 600 }}>
                       {category.name}
@@ -237,7 +238,11 @@ const CategoriesManagement = () => {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip label={category.icon} size="small" />
+                  <Chip 
+                    label={category.icon} 
+                    size="small"
+                    icon={<DynamicCategoryIcon iconName={category.icon} sx={{ fontSize: 16 }} />}
+                  />
                 </TableCell>
                 <TableCell align="right">
                   <IconButton
@@ -297,13 +302,10 @@ const CategoriesManagement = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
+              <IconSelector
                 label="Ícone"
                 value={formData.icon}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                variant="outlined"
-                placeholder="Ex: pizzas, bebidas, sobremesas"
+                onChange={(iconName) => setFormData({ ...formData, icon: iconName })}
               />
             </Grid>
           </Grid>

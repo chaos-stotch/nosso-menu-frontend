@@ -52,6 +52,8 @@ const DashboardHeader = ({ onMenuClick }) => {
         borderBottom: '1px solid',
         borderColor: 'divider',
         color: 'text.primary',
+        borderRadius: 0,
+        borderBottomLeftRadius: { xs: 20, md: 20 },
       }}
     >
       <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>

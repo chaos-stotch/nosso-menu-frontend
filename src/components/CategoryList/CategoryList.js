@@ -98,7 +98,7 @@ const CategoryList = ({ categories, selectedCategory, onSelectCategory }) => {
               }}
             >
               <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-                <CategoryIcon categoryId={category.icon} />
+                <CategoryIcon iconName={category.icon} />
               </Box>
               {category.name}
             </Button>

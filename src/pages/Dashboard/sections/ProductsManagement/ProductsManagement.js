@@ -27,6 +27,11 @@ import {
   InputLabel,
   CircularProgress,
   Alert,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Divider,
+  Checkbox,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -34,6 +39,8 @@ import {
   Delete as DeleteIcon,
   Fastfood as FastfoodIcon,
   Image as ImageIcon,
+  DeleteOutline as DeleteOutlineIcon,
+  ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { formatCurrency } from '../../../../utils/mockData';
@@ -59,6 +66,7 @@ const ProductsManagement = () => {
     isRecommended: false,
     isBestSeller: false,
     preparationTime: '',
+    options: [],
   });
 
   useEffect(() => {
@@ -99,6 +107,7 @@ const ProductsManagement = () => {
         isRecommended: product.isRecommended || false,
         isBestSeller: product.isBestSeller || false,
         preparationTime: product.preparationTime || '',
+        options: product.options || [],
       });
     } else {
       setEditingProduct(null);
@@ -111,6 +120,7 @@ const ProductsManagement = () => {
         isRecommended: false,
         isBestSeller: false,
         preparationTime: '',
+        options: [],
       });
     }
     setOpenDialog(true);
@@ -135,7 +145,7 @@ const ProductsManagement = () => {
         isRecommended: formData.isRecommended,
         isBestSeller: formData.isBestSeller,
         preparationTime: formData.preparationTime || null,
-      options: editingProduct?.options || [],
+      options: formData.options || [],
         restaurantId: restaurant?.id,
     };
 
@@ -197,6 +207,77 @@ const ProductsManagement = () => {
   const getCategoryName = (categoryId) => {
     const category = categories.find((c) => c.id === categoryId);
     return category?.name || categoryId;
+  };
+
+  // Funções para gerenciar opções
+  const addOption = () => {
+    const newOption = {
+      id: `option_${Date.now()}`,
+      name: '',
+      required: false,
+      choices: [],
+    };
+    setFormData({
+      ...formData,
+      options: [...formData.options, newOption],
+    });
+  };
+
+  const removeOption = (optionIndex) => {
+    const newOptions = formData.options.filter((_, index) => index !== optionIndex);
+    setFormData({
+      ...formData,
+      options: newOptions,
+    });
+  };
+
+  const updateOption = (optionIndex, field, value) => {
+    const newOptions = [...formData.options];
+    newOptions[optionIndex] = {
+      ...newOptions[optionIndex],
+      [field]: value,
+    };
+    setFormData({
+      ...formData,
+      options: newOptions,
+    });
+  };
+
+  const addChoice = (optionIndex) => {
+    const newChoice = {
+      id: `choice_${Date.now()}`,
+      name: '',
+      price: 0,
+    };
+    const newOptions = [...formData.options];
+    newOptions[optionIndex].choices = [...newOptions[optionIndex].choices, newChoice];
+    setFormData({
+      ...formData,
+      options: newOptions,
+    });
+  };
+
+  const removeChoice = (optionIndex, choiceIndex) => {
+    const newOptions = [...formData.options];
+    newOptions[optionIndex].choices = newOptions[optionIndex].choices.filter(
+      (_, index) => index !== choiceIndex
+    );
+    setFormData({
+      ...formData,
+      options: newOptions,
+    });
+  };
+
+  const updateChoice = (optionIndex, choiceIndex, field, value) => {
+    const newOptions = [...formData.options];
+    newOptions[optionIndex].choices[choiceIndex] = {
+      ...newOptions[optionIndex].choices[choiceIndex],
+      [field]: field === 'price' ? parseFloat(value) || 0 : value,
+    };
+    setFormData({
+      ...formData,
+      options: newOptions,
+    });
   };
 
   if (loading) {
@@ -530,6 +611,149 @@ const ProductsManagement = () => {
                   label="Mais Vendido"
                 />
               </Box>
+            </Grid>
+
+            {/* Opções do Produto */}
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  Opções do Produto
+                </Typography>
+                <Button
+                  startIcon={<AddIcon />}
+                  onClick={addOption}
+                  variant="outlined"
+                  size="small"
+                >
+                  Adicionar Opção
+                </Button>
+              </Box>
+
+              {formData.options.length === 0 ? (
+                <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 3 }}>
+                  Nenhuma opção adicionada. Clique em "Adicionar Opção" para criar opções como tamanho, borda, etc.
+                </Typography>
+              ) : (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {formData.options.map((option, optionIndex) => (
+                    <Accordion key={option.id} defaultExpanded>
+                      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', pr: 2 }}>
+                          <Typography sx={{ fontWeight: 600, flex: 1 }}>
+                            {option.name || `Opção ${optionIndex + 1}`}
+                          </Typography>
+                          {option.required && (
+                            <Chip label="Obrigatória" size="small" color="primary" />
+                          )}
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeOption(optionIndex);
+                            }}
+                            sx={{ color: 'error.main' }}
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </Box>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={8}>
+                            <TextField
+                              fullWidth
+                              label="Nome da Opção"
+                              placeholder="Ex: Tamanho, Borda, Bebida"
+                              value={option.name}
+                              onChange={(e) => updateOption(optionIndex, 'name', e.target.value)}
+                              variant="outlined"
+                              size="small"
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={option.required}
+                                  onChange={(e) => updateOption(optionIndex, 'required', e.target.checked)}
+                                />
+                              }
+                              label="Obrigatória"
+                            />
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Divider sx={{ my: 1 }} />
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                                Escolhas
+                              </Typography>
+                              <Button
+                                startIcon={<AddIcon />}
+                                onClick={() => addChoice(optionIndex)}
+                                variant="outlined"
+                                size="small"
+                              >
+                                Adicionar Escolha
+                              </Button>
+                            </Box>
+                            {option.choices.length === 0 ? (
+                              <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 2 }}>
+                                Nenhuma escolha adicionada. Adicione escolhas para esta opção.
+                              </Typography>
+                            ) : (
+                              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                {option.choices.map((choice, choiceIndex) => (
+                                  <Box
+                                    key={choice.id}
+                                    sx={{
+                                      display: 'flex',
+                                      gap: 2,
+                                      alignItems: 'flex-start',
+                                      p: 2,
+                                      border: '1px solid',
+                                      borderColor: 'divider',
+                                      borderRadius: 1,
+                                    }}
+                                  >
+                                    <TextField
+                                      label="Nome da Escolha"
+                                      placeholder="Ex: Pequeno, Grande, Sem borda"
+                                      value={choice.name}
+                                      onChange={(e) => updateChoice(optionIndex, choiceIndex, 'name', e.target.value)}
+                                      variant="outlined"
+                                      size="small"
+                                      sx={{ flex: 1 }}
+                                    />
+                                    <TextField
+                                      label="Preço Adicional"
+                                      type="number"
+                                      value={choice.price}
+                                      onChange={(e) => updateChoice(optionIndex, choiceIndex, 'price', e.target.value)}
+                                      variant="outlined"
+                                      size="small"
+                                      InputProps={{
+                                        startAdornment: <Typography sx={{ mr: 1 }}>R$</Typography>,
+                                      }}
+                                      sx={{ width: 150 }}
+                                    />
+                                    <IconButton
+                                      onClick={() => removeChoice(optionIndex, choiceIndex)}
+                                      sx={{ color: 'error.main', mt: 0.5 }}
+                                    >
+                                      <DeleteOutlineIcon />
+                                    </IconButton>
+                                  </Box>
+                                ))}
+                              </Box>
+                            )}
+                          </Grid>
+                        </Grid>
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                </Box>
+              )}
             </Grid>
           </Grid>
         </DialogContent>

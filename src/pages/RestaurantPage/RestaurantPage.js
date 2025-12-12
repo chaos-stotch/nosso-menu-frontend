@@ -96,6 +96,31 @@ const RestaurantPage = () => {
     };
   }, []);
 
+  // Atualizar favicon com a logo do restaurante
+  useEffect(() => {
+    if (!restaurant?.logo) return;
+
+    // Encontrar ou criar o elemento link do favicon
+    let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = restaurant.logo;
+    
+    // Adicionar ao head se não existir
+    if (!document.querySelector("link[rel*='icon']")) {
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+
+    // Função de limpeza: restaurar favicon padrão ao sair da página
+    return () => {
+      // Remover o favicon customizado quando sair da página
+      const customLink = document.querySelector("link[rel*='icon']");
+      if (customLink && customLink.href === restaurant.logo) {
+        customLink.remove();
+      }
+    };
+  }, [restaurant?.logo]);
+
   // Agrupar produtos por categoria
   const productsByCategory = useMemo(() => {
     const grouped = {};
